@@ -1,0 +1,12 @@
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Author>HanaSi0</Author>
+    <Name>XLinUI</Name>
+    <Punchline>你的简洁界面：快捷栏、分类聊天、方角技能栏。</Punchline>
+    <Description>个人现代 UI，支持独立模块开关、聊天分类、方角技能栏、圆角/直角、背景透明度和自定义色调。保留原版 HUD。</Description>
+    <RepoUrl>https://github.com/HanaSi0/others</RepoUrl>
+    <Tags>ui;chat;hotbar;personal</Tags>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+</Project>

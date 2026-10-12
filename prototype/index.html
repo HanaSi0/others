@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XLinUI · FF14 界面原型</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;color:#dee4eb;background:#10151c}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 70% 40%,#293c46,#10151c 70%)}button,input,select{font:inherit;color:inherit;background:#1b2530;border:1px solid #344351;padding:9px 12px}button{cursor:pointer}button:hover,button.active{background:#25434b;border-color:#64c4ba}button:focus-visible,input:focus-visible{outline:2px solid #64c4ba}header{display:flex;align-items:center;gap:10px;padding:12px 22px;background:#111820ed;border-bottom:1px solid #344351}header strong{letter-spacing:4px;color:#83d8ce;margin-right:24px}#shortcuts{display:flex;gap:6px;flex:1;flex-wrap:wrap}main{padding:35px 24px}small,.muted{color:#9fadb9}#notice{min-height:25px;margin:20px 0}#chat{display:grid;grid-template-columns:155px 1fr;width:min(840px,100%);height:480px;border:1px solid #344351;background:#121b24ed;margin-top:70px}aside{padding:14px;border-right:1px solid #344351}aside button{display:block;width:100%;text-align:left;margin:8px 0}.conversation{display:flex;flex-direction:column;min-width:0}.chat-head{padding:17px;border-bottom:1px solid #344351}#messages{flex:1;overflow:auto;padding:20px}.message{margin-bottom:20px;line-height:1.6}.message b{font-size:13px;color:#83d8ce}.message time{font-size:11px;color:#98a6b4;margin-left:10px}.message p{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}form.compose{display:flex;gap:8px;padding:12px;border-top:1px solid #344351}.compose input{flex:1;min-width:0}dialog{width:min(590px,95vw);background:#141e28;color:#dee4eb;border:1px solid #52616f;padding:24px}dialog::backdrop{background:#0009}label.toggle{display:flex;gap:10px;margin:16px 0}.channel-editor{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}.channel-editor input{width:145px}h2{font-size:19px}#settings footer{margin-top:24px;display:flex;justify-content:space-between}body.compact #messages{padding:12px}body.compact .message{margin-bottom:10px}[hidden]{display:none!important}@media(max-width:600px){#chat{grid-template-columns:110px 1fr}header{padding:12px;flex-wrap:wrap}main{padding:15px}.channel-editor input{width:100%}}
+
+:root{--radius:0px;--panel:rgba(18,27,36,.88);--blur:16px;--accent:#64c4ba;--border:#344351}
+button,input,select{border-radius:var(--radius);border-color:var(--border)}
+header,#chat,dialog,#skills{background:var(--panel);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));border-color:var(--border)}
+#chat,dialog{border-radius:var(--radius);overflow:hidden}
+button:hover,button.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,#18232d)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent)}
+header strong,.message b{color:var(--accent)}
+#skills{width:max-content;max-width:100%;margin:26px 0;padding:12px;border:1px solid var(--border);border-radius:0}
+.skill-grid{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.skill-grid button{width:62px;height:62px;border-radius:0!important;position:relative;padding:4px;background:linear-gradient(145deg,#293e50,#162331);font-size:14px}
+.skill-grid kbd{position:absolute;top:3px;left:5px;color:#a9b7c4;font-size:10px}
+.appearance-control{display:grid;grid-template-columns:120px 1fr 65px;gap:10px;align-items:center;margin:16px 0}
+.appearance-control input[type=range]{width:100%;padding:0;accent-color:var(--accent)}
+.appearance-control input[type=color]{width:65px;height:38px;padding:3px}
+#settings{max-height:85vh;overflow:auto}#chat{margin-top:35px}
+@supports not (backdrop-filter:blur(1px)){header,#chat,dialog,#skills{background:#18232d}}
+</style>
+<header><strong>XLinUI</strong><nav id="shortcuts" aria-label="游戏快捷入口"></nav><button id="open-settings">设置</button></header>
+<main><small>FF14 现代界面 · 交互原型 / 尚未连接游戏</small><div id="notice" role="status"></div>
+<section id="chat" aria-label="分类聊天"><aside><small>聊天频道</small><div id="channels"></div><button id="edit">编辑频道</button></aside><div class="conversation"><div class="chat-head" id="channel-title"></div><div id="messages" role="log" aria-live="polite"></div><form class="compose"><input id="draft" aria-label="消息内容" placeholder="输入原型消息，不会发送到游戏" maxlength="500"><button>发送</button></form></div></section>
+<section id="skills" aria-label="技能栏演示"><small>技能栏 · 固定直角 / 演示按钮</small><div class="skill-grid" id="skill-buttons"></div></section>
+</main>
+<dialog id="settings"><h2>界面设置</h2><p class="muted">开关独立保存于当前浏览器。原版游戏界面尚未修改。</p><div id="toggles"></div><h2>外观</h2><p class="muted">技能栏保持直角。透明度仅影响背景；文字保持清晰。</p><div id="appearance"></div><h2>顶部入口</h2><div id="entry-toggles"></div><h2>频道分类</h2><p class="muted">自定义名称及关联的游戏频道；多个分类可接收同一频道。</p><div id="editors"></div><button id="add">添加分类</button><footer><button id="reset">恢复默认</button><button id="close">完成</button></footer></dialog>
+<script>
+const defaults=()=>({top:true,chat:true,skills:true,compact:false,rounded:false,glass:true,opacity:88,blur:16,tint:'#64c4ba',entries:['角色','背包','任务','地图','传送','社交'],channels:[{id:'all',name:'全部',source:'全部'},{id:'party',name:'小队',source:'小队'},{id:'social',name:'社交',source:'部队'},{id:'tell',name:'私信',source:'私信'},{id:'system',name:'系统',source:'系统'}]});
+let config=defaults();try{const saved=JSON.parse(localStorage.getItem('hana-ui-v1'));if(saved&&Array.isArray(saved.channels)&&saved.channels.length&&Array.isArray(saved.entries))config={...config,...saved}}catch{}
+let active=config.channels[0].id;
+const sources=['全部','说话','小队','部队','私信','系统'];
+const messages=[{source:'系统',sender:'系统',text:'欢迎来到 XLinUI 原型。消息是演示数据。',time:'12:00'},{source:'小队',sender:'队友',text:'准备好了就出发吧。',time:'12:01'},{source:'部队',sender:'朋友',text:'今天一起去拍照吗？',time:'12:02'},{source:'私信',sender:'朋友',text:'到主城后告诉我。',time:'12:03'}];
+const $=id=>document.getElementById(id);function save(){try{localStorage.setItem('hana-ui-v1',JSON.stringify(config))}catch{$('notice').textContent='浏览器禁止保存设置，本次修改仍然有效。'}}
+function button(text,fn){const b=document.createElement('button');b.textContent=text;b.onclick=fn;return b}
+function theme(){
+ const root=document.documentElement.style;
+ const opacity=Math.min(100,Math.max(0,Number(config.opacity)||0));
+ const blur=Math.min(30,Math.max(0,Number(config.blur)||0));
+ const tint=/^#[0-9a-f]{6}$/i.test(config.tint)?config.tint:'#64c4ba';
+ const rgb=[1,3,5].map(i=>parseInt(tint.slice(i,i+2),16));
+ root.setProperty('--radius',config.rounded?'12px':'0px');
+ root.setProperty('--panel',`rgba(${rgb.map(v=>Math.round(v*.18)).join(',')},${opacity/100})`);
+ root.setProperty('--blur',config.glass?`${blur}px`:'0px');
+ root.setProperty('--accent',tint);
+ root.setProperty('--border',`rgb(${rgb.map(v=>Math.round(v*.45+20)).join(',')})`);
+ $('skills').hidden=!config.skills;
+}
+function appearance(){
+ const parent=$('appearance');parent.replaceChildren();
+ checkbox(parent,'其他 UI 使用圆角（关闭为直角）',config.rounded,v=>config.rounded=v);
+ checkbox(parent,'背景玻璃模糊',config.glass,v=>config.glass=v);
+ for(const [key,title,min,max,unit] of [['opacity','背景不透明度',0,100,'%'],['blur','模糊强度',0,30,'px']]){
+ const row=document.createElement('label');row.className='appearance-control';
+ const input=document.createElement('input');input.type='range';input.min=min;input.max=max;input.value=config[key];
+ const output=document.createElement('output');output.textContent=config[key]+unit;
+ input.oninput=()=>{config[key]=Number(input.value);output.textContent=input.value+unit;save();theme()};
+ row.append(document.createTextNode(title),input,output);parent.append(row);
+ }
+ const row=document.createElement('label');row.className='appearance-control';
+ const input=document.createElement('input');input.type='color';input.value=config.tint;
+ const output=document.createElement('output');output.textContent=config.tint;
+ input.oninput=()=>{config.tint=input.value;output.textContent=input.value;save();theme()};
+ row.append(document.createTextNode('自定义色调'),input,output);parent.append(row);
+}
+function render(){theme();if(!config.channels.some(c=>c.id===active))active=config.channels[0].id;$('shortcuts').replaceChildren();$('shortcuts').hidden=!config.top;config.entries.forEach(name=>$('shortcuts').append(button(name,()=>{$('notice').textContent=`「${name}」入口：原型演示，尚未打开游戏窗口。`})));$('chat').hidden=!config.chat;document.body.classList.toggle('compact',config.compact);$('channels').replaceChildren();config.channels.forEach(c=>{const b=button(c.name,()=>{active=c.id;render()});b.classList.toggle('active',c.id===active);$('channels').append(b)});const c=config.channels.find(c=>c.id===active);$('channel-title').textContent=c.name+' · '+c.source;$('messages').replaceChildren();messages.filter(m=>c.source==='全部'||m.source===c.source).forEach(m=>{const d=document.createElement('div');d.className='message';const b=document.createElement('b');b.textContent=m.sender+' · '+m.source;const t=document.createElement('time');t.textContent=m.time;const p=document.createElement('p');p.textContent=m.text;d.append(b,t,p);$('messages').append(d)});$('messages').scrollTop=$('messages').scrollHeight}
+function checkbox(parent,text,checked,fn){const label=document.createElement('label');label.className='toggle';const input=document.createElement('input');input.type='checkbox';input.checked=checked;input.onchange=()=>{fn(input.checked);save();render()};label.append(input,document.createTextNode(text));parent.append(label)}
+function settings(){ appearance(); $('toggles').replaceChildren();[['top','顶部快捷栏'],['chat','分类聊天窗口'],['skills','技能栏演示'],['compact','紧凑聊天间距']].forEach(([key,text])=>checkbox($('toggles'),text,config[key],v=>config[key]=v));$('entry-toggles').replaceChildren();defaults().entries.forEach(name=>checkbox($('entry-toggles'),name,config.entries.includes(name),v=>config.entries=v?[...config.entries,name]:config.entries.filter(n=>n!==name)));$('editors').replaceChildren();config.channels.forEach(c=>{const row=document.createElement('div');row.className='channel-editor';const input=document.createElement('input');input.value=c.name;input.maxLength=16;input.setAttribute('aria-label','分类名称');input.onchange=()=>{c.name=input.value.trim()||'未命名';save();render()};const select=document.createElement('select');select.setAttribute('aria-label','关联游戏频道');sources.forEach(s=>{const o=document.createElement('option');o.textContent=s;o.selected=s===c.source;select.append(o)});select.onchange=()=>{c.source=select.value;save();render()};const remove=button('删除',()=>{config.channels=config.channels.filter(x=>x.id!==c.id);save();render();settings()});remove.disabled=config.channels.length===1;row.append(input,select,remove);$('editors').append(row)})}
+function open(){settings();$('settings').showModal()}$('open-settings').onclick=open;$('edit').onclick=open;$('close').onclick=()=> $('settings').close();$('add').onclick=()=>{config.channels.push({id:crypto.randomUUID(),name:'新分类',source:'全部'});save();render();settings()};$('reset').onclick=()=>{config=defaults();save();render();settings()};document.querySelector('.compose').onsubmit=e=>{e.preventDefault();const text=$('draft').value.trim();if(!text)return;const c=config.channels.find(c=>c.id===active);messages.push({source:c.source==='全部'?'说话':c.source,sender:'我（演示）',text,time:new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})});if(messages.length>300)messages.shift();$('draft').value='';render()};['技能 1','技能 2','技能 3','技能 4','技能 5','技能 6','技能 7','技能 8'].forEach((name,i)=>{const b=button(name,()=>{$('notice').textContent='技能按钮为外观演示，不会执行游戏动作。'});const k=document.createElement('kbd');k.textContent=i+1;b.prepend(k);$('skill-buttons').append(b)});render();
+</script>
+</html>
